@@ -3,8 +3,6 @@ import java.nio.charset.*;
 
 public class Main {
 
-
-  
   static int pesquisaSerie(String linha, Serie[] serie){
  
       for(int i = 0; i < serie.length; i++) {
@@ -25,7 +23,7 @@ public class Main {
     MyIO.setCharset("UTF-8");
     int i = 0, j = -2, cont = -1;
     
-    ArquivoTextoLeitura input = new ArquivoTextoLeitura("//tmp/data.txt");
+    ArquivoTextoLeitura input = new ArquivoTextoLeitura("/tmp/data.txt");
     ArquivoTextoEscrita output = new ArquivoTextoEscrita("//tmp/666578_bolha.txt");
 
     String linha = input.ler(); String wire, fio;
@@ -39,7 +37,7 @@ public class Main {
     
     Serie[] b = new Serie[cont];
     
-    input = new ArquivoTextoLeitura("//tmp/data.txt");
+    input = new ArquivoTextoLeitura("/tmp/data.txt");
 	  wire = input.ler();
 
   	for (i = 0; i < cont; i++) {
@@ -69,62 +67,89 @@ public class Main {
   		
   	}
   	
-  	
+  	HeapSort heapsort = new HeapSort();
+    heapsort.sort(c, quantidade);
+    
 
-    Bubblesort bubblesort = new Bubblesort();
-    bubblesort.sort(c, quantidade);
+    
+    
 
     for(j = 0; j < c.length; j++){
 
       c[j].imprimir();
   
     }
+    
 
-    output.escrever("746639" + "\t" + bubblesort.result + "\t" + bubblesort.COMPARACOES_ENTRE_ELEMENTOS + "\t" + bubblesort.MOVIMENTACOES_ENTRE_ELEMENTOS);
+    output.escrever("746639" + "\t" + heapsort.result + "\t" + heapsort.COMPARACOES_ENTRE_ELEMENTOS + "\t" + heapsort.MOVIMENTACOES_ENTRE_ELEMENTOS);
     output.fecharArquivo();
 
   }
 
 }
 
-class Bubblesort {
+class HeapSort {
 
     public int COMPARACOES_ENTRE_ELEMENTOS = 0, MOVIMENTACOES_ENTRE_ELEMENTOS = 0;
 
     public long tempoInicial;
 
-    public void sort(Serie[] array, int n) {  
+      public void sort(Serie arr[], int n) {
+        tempoInicial = System.currentTimeMillis();
+        // Build heap (rearrange array)
+        for (int i = n / 2 - 1; i >= 0; i--)
+            heapify(arr, n, i);
 
-             tempoInicial = System.currentTimeMillis();
+            // One by one extract an element from heap
+            for (int i = n - 1; i >= 0; i--) {
+                // Move current root to end
+                Serie temp = arr[0];
+                arr[0] = arr[i];
+                arr[i] = temp;
 
-		for (int i = (n - 1); i > 0; i--) {
+                // call max heapify on the reduced heap
+                heapify(arr, i, 0);
+            }
+        }
 
-                    for (int j = 0; j < i; j++) {
+        // To heapify a subtree rooted with node i which is
+        // an index in arr[]. n is size of heap
+        void heapify(Serie arr[], int n, int i) {
+            int largest = i; // Initialize largest as root
+            int l = 2 * i + 1; // left = 2*i + 1
+            int r = 2 * i + 2; // right = 2*i + 2
 
-                        COMPARACOES_ENTRE_ELEMENTOS++;
-   
-                        if (array[j].getDuração().compareTo(array[j+1].getDuração()) > 0 || (array[j].getDuração().compareTo(array[j+1].getDuração()) == 0 && 
-                        		(array[j].getNome().compareTo(array[j+1].getNome()) > 0))) {
+            // If left child is larger than root
+            COMPARACOES_ENTRE_ELEMENTOS++;
+            if (l < n && (
+              
+              (   arr[l].getTemps() > arr[largest].getTemps() || arr[l].getTemps() == arr[largest].getTemps()    && ( arr[l].getNome().compareTo(arr[largest].getNome()) > 0)  ))
+               )
+                largest = l;
 
-                                       Serie temp = array[j];
+            // If right child is larger than largest so far
+            COMPARACOES_ENTRE_ELEMENTOS++;
+            if (r < n && (   arr[r].getTemps() > arr[largest].getTemps() || arr[r].getTemps() == arr[largest].getTemps()  && ( arr[r].getNome().compareTo(arr[largest].getNome()) > 0)  ))
+                largest = r;
 
-                                       array[j] = array[j+1];
+            // If largest is not root
+            COMPARACOES_ENTRE_ELEMENTOS++;
+            if (largest != i) {
+                MOVIMENTACOES_ENTRE_ELEMENTOS++;
+                Serie swap = arr[i];
+                arr[i] = arr[largest];
+                arr[largest] = swap;
 
-                                       array[j+1] = temp;
+                // Recursively heapify the affected sub-tree
+                heapify(arr, n, largest);
+            }
+        }
 
-                                       MOVIMENTACOES_ENTRE_ELEMENTOS++;
+        /* A utility function to print array of size n */
+        
 
-                                 }
-
-                     }
-
-               
-
-               }
-
-  }
-
-    public double result = ((System.currentTimeMillis() - tempoInicial));
+        // Driver program
+      public double result = ((System.currentTimeMillis() - tempoInicial));
 }
 
 class ArquivoTextoEscrita {
@@ -165,7 +190,6 @@ class ArquivoTextoEscrita {
 		}
 	}
 }
-
 
 class ArquivoTextoLeitura {
 
@@ -211,7 +235,6 @@ class ArquivoTextoLeitura {
 		}
 	}
 }
-
 
 class MyIO {
 
@@ -448,7 +471,6 @@ class MyIO {
       pause();
    }
 }
-
 
 class Serie{
 
