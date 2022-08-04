@@ -1,389 +1,613 @@
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.*;
 
-class Serie {
-    // ATRIBUTOS PRIVADOS
-    private String name;
-    private String format;
-    private String duration;
-    private String fromCountry;
-    private String originalLanguage;
-    private String originalBroadcaster;
-    private String inicialTransmissionDate;
-    private int seasonQuantity;
-    private int episodeQuantity;
+public class Main {
 
-    // CONSTRUTORES
 
-    public Serie() {
+  
+  static int pesquisaSerie(String linha, Serie[] serie){
+ 
+      for(int i = 0; i < serie.length; i++) {
+  			
+  			if(serie[i].getNome().equals(linha)) {
+          
+  				return i;
+
+  			}
+  			
+  		}
+      return -1;
+  }
+
+  
+  public static void main(String[] args) {
+
+    MyIO.setCharset("UTF-8");
+    int i = 0, j = -2, cont = -1;
+    
+    ArquivoTextoLeitura input = new ArquivoTextoLeitura("//tmp/data.txt");
+    ArquivoTextoEscrita output = new ArquivoTextoEscrita("//tmp/666578_bolha.txt");
+
+    String linha = input.ler(); String wire, fio;
+    
+    while(linha != null) {
+    	
+    	linha = input.ler();
+    	cont++;
+      
+    }
+    
+    Serie[] b = new Serie[cont];
+    
+    input = new ArquivoTextoLeitura("//tmp/data.txt");
+	  wire = input.ler();
+
+  	for (i = 0; i < cont; i++) {
+  	
+      wire = input.ler();
+        
+    	b[i] = new Serie();
+      
+    	b[i].ler(wire);
+    
+  	}
+
+    input.fecharArquivo();
+
+  	int quantidade =  MyIO.readInt();
+  	int posição = 0;
+  	
+  	Serie[] c = new Serie[quantidade];
+  	
+  	for(i = 0; i < quantidade; i++) {
+  		
+  		fio = MyIO.readLine();
+      
+      posição = pesquisaSerie(fio, b);
+      
+      c[i] = b[posição].clone();		
+  		
+  	}
+  	
+  	
+
+    Bubblesort bubblesort = new Bubblesort();
+    bubblesort.sort(c, quantidade);
+
+    for(j = 0; j < c.length; j++){
+
+      c[j].imprimir();
+  
     }
 
-    public Serie(String name, String format, String duration, String fromCountry, String originalLanguage,
-            String originalBroadcaster, String initialTransmissionDate, int seasonQuantity,
-            int episodeQuantity) {
-        this.name = name;
-        this.format = format;
-        this.duration = duration;
-        this.fromCountry = fromCountry;
-        this.originalLanguage = originalLanguage;
-        this.originalBroadcaster = originalBroadcaster;
-        this.inicialTransmissionDate = initialTransmissionDate;
-        this.seasonQuantity = seasonQuantity;
-        this.episodeQuantity = episodeQuantity;
-    }
+    output.escrever("746639" + "\t" + bubblesort.result + "\t" + bubblesort.COMPARACOES_ENTRE_ELEMENTOS + "\t" + bubblesort.MOVIMENTACOES_ENTRE_ELEMENTOS);
+    output.fecharArquivo();
 
-    // Metodos Publicos
+  }
 
-    public Serie clone() {
-        return new Serie(
-                name,
-                format,
-                duration,
-                fromCountry,
-                originalLanguage,
-                originalBroadcaster,
-                inicialTransmissionDate,
-                seasonQuantity,
-                episodeQuantity);
-    }
-
-    public void read(String stringSerie) {
-
-        // How I Met Your Mother;Sitcom;23 min. aprox.;Estados Unidos;Inglês; CBS;19 de
-        // setembro de 2005–31 de março de 2014;9;208
-
-        if (stringSerie != null) {
-            String[] serieData = stringSerie.split(";");
-            setName(serieData[0]);
-            setFormat(serieData[1]);
-            setDuration(serieData[2]);
-            setFromCountry(serieData[3]);
-            setOriginalLanguage(serieData[4]);
-            setOriginalBroadcaster(serieData[5]);
-            setInitialTransmissionDate(serieData[6]);
-            setSeasonQuantity(Integer.parseInt(serieData[7]));
-            setEpisodeQuantity(Integer.parseInt(serieData[8]));
-        }
-
-    }
-
-    public void print() {
-        MyIO.println(this.getName() + " ## " + this.getFormat() + " ## " + this.getDuration() + " ## "
-                + this.getFromCountry()
-                + " ## " + this.getOriginalLanguage() + " ## " + this.getOriginalBroadcaster() + " ## "
-                + this.getInitialTransmissionDate() + " ## "
-                + this.getSeasonQuantity() + " ## " + this.getEpisodeQuantity());
-    }
-
-    // GETTERS e SETTERS
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public String getFromCountry() {
-        return fromCountry;
-    }
-
-    public void setFromCountry(String fromCountry) {
-        this.fromCountry = fromCountry;
-    }
-
-    public String getOriginalLanguage() {
-        return originalLanguage;
-    }
-
-    public void setOriginalLanguage(String originalLanguage) {
-        this.originalLanguage = originalLanguage;
-    }
-
-    public String getOriginalBroadcaster() {
-        return originalBroadcaster;
-    }
-
-    public void setOriginalBroadcaster(String originalBroadcaster) {
-        this.originalBroadcaster = originalBroadcaster;
-    }
-
-    public String getInitialTransmissionDate() {
-        return inicialTransmissionDate;
-    }
-
-    public void setInitialTransmissionDate(String InitialTransmissionDate) {
-        this.inicialTransmissionDate = InitialTransmissionDate;
-    }
-
-    public int getSeasonQuantity() {
-        return seasonQuantity;
-    }
-
-    public void setSeasonQuantity(int seasonQuantity) {
-        this.seasonQuantity = seasonQuantity;
-    }
-
-    public int getEpisodeQuantity() {
-        return episodeQuantity;
-    }
-
-    public void setEpisodeQuantity(int episodeQuantity) {
-        this.episodeQuantity = episodeQuantity;
-    }
 }
 
-class Reader {
-    private BufferedReader input;
+class Bubblesort {
 
-    public Reader(String fileName) {
-        try {
-            input = new BufferedReader(new FileReader(fileName));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    public int COMPARACOES_ENTRE_ELEMENTOS = 0, MOVIMENTACOES_ENTRE_ELEMENTOS = 0;
 
-    }
+    public long tempoInicial;
 
-    public void closeFile() {
+    public void sort(Serie[] array, int n) {  
 
-        try {
-            input.close();
-        } catch (Exception e) {
-            System.out.println("Error while closing : " + e);
-        }
-    }
+             tempoInicial = System.currentTimeMillis();
 
-    @SuppressWarnings("finally")
-    public String read() {
+		for (int i = (n - 1); i > 0; i--) {
 
-        String inputText = null;
+                    for (int j = 0; j < i; j++) {
 
-        try {
-            inputText = input.readLine();
-        } catch (EOFException e) {
-            inputText = null;
-        } catch (IOException e) {
-            System.out.println("Reading error: " + e);
-            inputText = null;
-        } finally {
-            return inputText;
-        }
-    }
+                        COMPARACOES_ENTRE_ELEMENTOS++;
+   
+                        if (array[j].getDuração().compareTo(array[j+1].getDuração()) > 0 || (array[j].getDuração().compareTo(array[j+1].getDuração()) == 0 && 
+                        		(array[j].getNome().compareTo(array[j+1].getNome()) > 0))) {
+
+                                       Serie temp = array[j];
+
+                                       array[j] = array[j+1];
+
+                                       array[j+1] = temp;
+
+                                       MOVIMENTACOES_ENTRE_ELEMENTOS++;
+
+                                 }
+
+                     }
+
+               
+
+               }
+
+  }
+
+    public double result = ((System.currentTimeMillis() - tempoInicial));
 }
 
-class ListaLinear {
+class ArquivoTextoEscrita {
 
-    private Serie lista[];
-    public int primeiro;
-    public int ultimo;
-    public int tamanho;
-
-    public ListaLinear(int tamanho) {
-
-        lista = new Serie[tamanho];
-        tamanho = 0;
-        primeiro = 0;
-        ultimo = 0;
-    }
-
-    public boolean listaVazia() {
-        return (primeiro == ultimo);
-    }
-
-    public boolean listaCheia() {
-        return (ultimo == lista.length);
-    }
-
-    public void inserir(Serie novo, int posicao) throws Exception {
-
-        if (!listaCheia()) {
-            if ((posicao >= 0) && (posicao <= tamanho)) {
-                for (int i = ultimo; i > posicao; i--)
-                    lista[i] = lista[i - 1];
-
-                lista[posicao] = novo;
-
-                ultimo++;
-                tamanho++;
-            } else
-                throw new Exception("Não foi possível inserir o item na lista: posição informada é inválida!");
-        } else
-            throw new Exception("Não foi possível inserir o item na lista: a lista está cheia!");
-    }
-
-    public Serie remover(int posicao) throws Exception {
-
-        Serie removido;
-
-        if (!listaVazia()) {
-            if ((posicao >= 0) && (posicao < tamanho)) {
-
-                removido = lista[posicao];
-                tamanho--;
-
-                for (int i = posicao; i < tamanho; i++) {
-                    lista[i] = lista[i + 1];
-                }
-
-                ultimo--;
-
-                return removido;
-            } else
-                throw new Exception("Não foi possível remover o item da lista: posição informada é inválida!");
-        } else
-            throw new Exception("Não foi possível remover o item da lista: a lista está vazia!");
-    }
-
-    public void imprimir() throws Exception {
-
-        if (!listaVazia()) {
-
-            for (int i = primeiro; i < ultimo; i++) {
-                System.out.print("[" + i + "]");
-                lista[i].print();
-            }
-        } else
-            throw new Exception("Não foi possível imprimir o conteúdo da lista: a lista está vazia!");
-    }
-
-    public void imprimirDesempilhados() throws Exception {
-
-        if (!listaVazia()) {
-            for (int i = primeiro; i < ultimo; i++) {
-                System.out.print("(R) ");
-                String Saida = lista[i].getName();
-                System.out.println(Saida);
-            }
-        } else
-            throw new Exception("Não foi possível imprimir o conteúdo da lista: a lista está vazia!");
-    }
-
-    public Serie procurar(String nome) {
-        if (!listaVazia()) {
-            for (int i = 0; i < lista.length; i++) {
-                int position = i;
-                if (lista[position].getName().equals(nome)) {
-                    return lista[position];
-                }
-            }
-        }
-        return null;
-
-    }
+	private BufferedWriter saida;
+		
+	ArquivoTextoEscrita(String nomeArquivo) {	
+		
+		try {
+			saida = new BufferedWriter(new FileWriter(nomeArquivo));
+		}
+		catch (FileNotFoundException excecao) {
+			System.out.println("Arquivo nao encontrado");
+		}
+		catch (IOException excecao) {
+			System.out.println("Erro na abertura do arquivo de escrita: " + excecao);
+		}
+	}
+	
+	public void fecharArquivo() {
+		
+		try {
+			saida.close();
+		}
+		catch (IOException excecao) {
+			System.out.println("Erro no fechamento do arquivo de escrita: " + excecao);	
+		}
+	}
+	
+	public void escrever(String textoEntrada) {
+	
+		try {
+			saida.write(textoEntrada);
+			saida.newLine();
+		}
+		catch (IOException excecao){
+			System.out.println("Erro de entrada/saída " + excecao);
+		}
+	}
 }
 
-class Main {
-    public static void main(String[] args) throws Exception {
 
-        MyIO.setCharset("UTF-8");
-        ListaLinear auxiliar = new ListaLinear(62);
-        Reader reader = new Reader("//tmp/data.txt");
-        String serieData;
+class ArquivoTextoLeitura {
 
-        // Discards the first pilha
-        reader.read();
-        // Reads the second pilha
-        serieData = reader.read();
+	private BufferedReader entrada;
+	
+	ArquivoTextoLeitura(String nomeArquivo) {	
+		
+		try {
+			entrada = new BufferedReader(new FileReader(nomeArquivo));
+		}
+		catch (FileNotFoundException excecao) {
+			System.out.println("Arquivo nao encontrado");
+		}
+	}
+	
+	public void fecharArquivo() {
+		
+		try {
+			entrada.close();
+		}
+		catch (IOException excecao) {
+			System.out.println("Erro no fechamento do arquivo de leitura: " + excecao);	
+		}
+	}
+	
+	@SuppressWarnings("finally")
+	public String ler() {
+		
+		String textoEntrada = null;
+		
+		try {
+			textoEntrada = entrada.readLine();
+		}
+		catch (EOFException excecao) { //Excecao de final de arquivo.
+			textoEntrada = null;
+		}
+		catch (IOException excecao) {
+			System.out.println("Erro de leitura: " + excecao);
+			textoEntrada = null;
+		}
+		finally {
+			return textoEntrada;
+		}
+	}
+}
 
-        // This pilha bellow was excrutiating
 
-        while (serieData != null && !serieData.equals("FIM")) {
-            Serie serieInstance = new Serie();
-            serieInstance.read(serieData);
+class MyIO {
 
-            try {
-                int position = auxiliar.ultimo;
-                auxiliar.inserir(serieInstance, position);
-            } catch (Exception e) {
+   private static BufferedReader in = new BufferedReader(new InputStreamReader(System.in, Charset.forName("ISO-8859-1")));
+   private static String charset = "ISO-8859-1";
+
+   public static void setCharset(String charset_){
+      charset = charset_;
+      in = new BufferedReader(new InputStreamReader(System.in, Charset.forName(charset)));
+   }
+
+   public static void print(){
+   }
+
+   public static void print(int x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void print(double x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void print(String x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void print(boolean x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void print(char x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void println(){
+   }
+
+   public static void println(int x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.println(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void println(double x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.println(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void println(String x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.println(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void println(boolean x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.println(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void println(char x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.println(x);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static void printf(String formato, double x){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.printf(formato, x);// "%.2f"
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+   }
+
+   public static double readDouble(){
+      double d = -1;
+      try{
+         d = Double.parseDouble(readString().trim().replace(",","."));
+      }catch(Exception e){}
+      return d;
+   }
+
+   public static double readDouble(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      return readDouble();
+   }
+
+   public static float readFloat(){
+      return (float) readDouble();
+   }
+
+   public static float readFloat(String str){
+      return (float) readDouble(str);
+   }
+
+   public static int readInt(){
+      int i = -1;
+      try{
+         i = Integer.parseInt(readString().trim());
+      }catch(Exception e){}
+      return i;
+   }
+
+   public static int readInt(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      return readInt();
+   }
+
+   public static String readString(){
+      String s = "";
+      char tmp;
+      try{
+         do{
+            tmp = (char)in.read();
+            if(tmp != '\n' && tmp != ' ' && tmp != 13){
+               s += tmp;
+            }
+         }while(tmp != '\n' && tmp != ' ');
+      }catch(IOException ioe){
+         System.out.println("lerPalavra: " + ioe.getMessage());
+      }
+      return s;
+   }
+
+   public static String readString(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      return readString();
+   }
+
+   public static String readLine(){
+      String s = "";
+      char tmp;
+      try{
+         do{
+            tmp = (char)in.read();
+            if(tmp != '\n' && tmp != 13){
+               s += tmp;
+            }
+         }while(tmp != '\n');
+      }catch(IOException ioe){
+         System.out.println("lerPalavra: " + ioe.getMessage());
+      }
+      return s;
+   }
+
+   public static String readLine(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      return readLine();
+   }
+
+   public static char readChar(){
+      char resp = ' ';
+      try{
+         resp  = (char)in.read();
+      }catch(Exception e){}
+      return resp;
+   }
+
+   public static char readChar(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      return readChar();
+   }
+
+   public static boolean readBoolean(){
+      boolean resp = false;
+      String str = "";
+
+      try{
+         str = readString();
+      }catch(Exception e){}
+
+      if(str.equals("true") || str.equals("TRUE") || str.equals("t") || str.equals("1") || 
+            str.equals("verdadeiro") || str.equals("VERDADEIRO") || str.equals("V")){
+         resp = true;
             }
 
-            serieData = reader.read();
+      return resp;
+   }
 
-        }
+   public static boolean readBoolean(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      return readBoolean();
+   }
 
-        // Making a new array to storage the privious amont of Series
-        ListaLinear Series = new ListaLinear(62);
-        String l;
+   public static void pause(){
+      try{
+         in.read();
+      }catch(Exception e){}
+   }
 
-        while ((l = MyIO.readLine()) != null && !l.equals("FIM")) {
-            Serie leitura = auxiliar.procurar(l);
-            int position = Series.ultimo;
-            Series.inserir(leitura, position);
+   public static void pause(String str){
+      try {
+         PrintStream out = new PrintStream(System.out, true, charset);
+         out.print(str);
+      }catch(UnsupportedEncodingException e){ System.out.println("Erro: charset invalido"); }
+      pause();
+   }
+}
 
-        }
-        /// Reading the number of queue operations I(inpilha), R(remove)
-        int quantidade = MyIO.readInt();
-        ListaLinear desenpilhadoSeries = new ListaLinear(62);
-        for (int i = 0; i < quantidade; i++) {
-            String command = MyIO.readLine();
-            try {
-                if (command.contains("II")) {
-                    command = command.replace("II ", "");
-                    Serie leitura = auxiliar.procurar(command);
-                    Series.inserir(leitura, Series.primeiro);
-                }
 
-                if (command.contains("I*")) {
-                    command = command.replace("I* ", "");
-                    String possition = command.substring(0,command.indexOf(" "));
-                    int aux = Integer.parseInt(possition);
-                    command = command.replace(possition+" ", "");
-                    Serie leitura = auxiliar.procurar(command);
-                    Series.inserir(leitura, aux );
+class Serie{
 
-                }
+  private String nome;
+  private String formato;
+  private String duração;
+  private String paísOrig;
+  private String idiomOrig;
+  private String emissora;
+  private String iniciotransm;
+  private int temps;
+  private int numepis;
 
-                if (command.contains("IF")) {
-                    command = command.replace("IF ", "");
-                    Serie leitura = auxiliar.procurar(command);
-                    Series.inserir(leitura, Series.ultimo);
+  public Serie(String nome, String formato, String duração, String paísOrig, String idiomOrig, String emissora, String iniciotransm, int temps, int numepis){
 
-                }
-                if (command.equals("RI")) {
-                    Serie desenpilhado = new Serie();
-                    desenpilhado = Series.remover(Series.primeiro);
-                    desenpilhadoSeries.inserir(desenpilhado, desenpilhadoSeries.ultimo);
-                }
-                if (command.contains("R*")) {
-                    Serie desenpilhado = new Serie();
-                    command = command.replace("R* ", "");
-                    int aux = Integer.parseInt(command);
-                    desenpilhado = Series.remover(aux);
-                    desenpilhadoSeries.inserir(desenpilhado, desenpilhadoSeries.ultimo);
+    this.nome = nome;
+    this.formato = formato;
+    this.duração = duração;
+    this.paísOrig = paísOrig;
+    this.idiomOrig = idiomOrig;    
+    this.emissora = emissora;
+    this.iniciotransm = iniciotransm;
+    this.temps = temps;
+    this.numepis = numepis;
+    
+  }
 
-                }
-                if (command.equals("RF")) {
-                    Serie desenpilhado = new Serie();
-                    desenpilhado = Series.remover(Series.ultimo - 1);
-                    desenpilhadoSeries.inserir(desenpilhado, desenpilhadoSeries.ultimo);
+  public Serie(){
+    
+  }
 
-                }
-            } catch (Exception e) {
-            }
+  public String getNome() {
+    return nome;
+  }
 
-        }
-        desenpilhadoSeries.imprimirDesempilhados();
-        Series.imprimir();
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
-    }
+  public String getFormato() {
+    return formato;
+  }
+
+  public void setFormato(String formato) {
+    this.formato = formato;
+  }
+
+  public String getDuração() {
+    return duração;
+  }
+
+  public void setDuração(String duração) {
+    this.duração = duração;
+  }
+
+  public String getPaísOrig() {
+    return paísOrig;
+  }
+
+  public void setPaísOrig(String paísOrig) {
+    this.paísOrig = paísOrig;
+  }
+
+  public String getIdiomOrig() {
+    return idiomOrig;
+  }
+
+  public void setIdiomOrig(String idiomOrig) {
+    this.idiomOrig = idiomOrig;
+  }
+
+  public String getEmissora() {
+    return emissora;
+  }
+
+  public void setEmissora(String emissora) {
+    this.emissora = emissora;
+  }
+
+  public String getIniciotransm() {
+    return iniciotransm;
+  }
+
+  public void setIniciotransm(String iniciotransm) {
+    this.iniciotransm = iniciotransm;
+  }
+
+  public int getTemps() {
+    return temps;
+  }
+
+  public void setTemps(int temps) {
+    this.temps = temps;
+  }
+
+  public int getNumepis() {
+    return numepis;
+  }
+
+  public void setNumepis(int numepis) {
+    this.numepis = numepis;
+  }
+
+  public void ler(){
+
+    ArquivoTextoLeitura input = new ArquivoTextoLeitura("//tmp/data.txt");
+    String X = input.ler();
+    
+    String[] splitX = X.split(";"); 
+    setNome(splitX[0]);
+    setFormato(splitX[1]);
+    setDuração(splitX[2]);    
+    setPaísOrig(splitX[3]); 
+    setIdiomOrig(splitX[4]); 
+    setEmissora(splitX[5]); 
+    setIniciotransm(splitX[6]);
+    setTemps(Integer.parseInt(splitX[7]));
+    setNumepis(Integer.parseInt(splitX[8]));
+    
+  }
+
+  public void ler(String str){
+
+	    
+	    String[] splitX = str.split(";"); 
+	    setNome(splitX[0]);
+	    setFormato(splitX[1]);
+	    setDuração(splitX[2]);    
+	    setPaísOrig(splitX[3]); 
+	    setIdiomOrig(splitX[4]); 
+	    setEmissora(splitX[5]); 
+	    setIniciotransm(splitX[6]);
+	    setTemps(Integer.parseInt(splitX[7]));
+	    setNumepis(Integer.parseInt(splitX[8]));
+	    
+	    
+	  }
+
+  public void imprimir(){
+
+    
+    MyIO.println( this.getNome() + " ## " + this.getFormato() + " ## " + this.getDuração() + " ## " + this.getPaísOrig() + " ## " + this.getIdiomOrig() + " ## " + this.getEmissora() + " ## " + this.getIniciotransm() + " ## " + this.getTemps() + " ## " + this.getNumepis() );
+    
+    
+    
+  }
+
+  public Serie clone(){
+    Serie serie = new Serie();
+    serie.setNome(this.nome);
+    serie.setFormato(this.formato);
+    serie.setDuração(this.duração);
+    serie.setPaísOrig(this.paísOrig);
+    serie.setIdiomOrig(this.idiomOrig);
+    serie.setEmissora(this.emissora);   
+    serie.setIniciotransm(this.iniciotransm);  
+    serie.setTemps(this.temps);  
+    serie.setNumepis(this.numepis); 
+    return serie;
+  }
+  
 }
